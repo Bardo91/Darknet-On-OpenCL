@@ -770,23 +770,44 @@ void forward_network_gpu(network *netp)
     if(net.truth){
 		cl_push_array(net.truth_gpu, net.truth, net.truths*net.batch);
     }
-
+    system("clear");
     int i;
     for(i = 0; i < net.n; ++i){
+        auto t0 = std::chrono::system_clock::now();
         net.index = i;
         layer l = net.layers[i];
-        if(l.delta_gpu.buffer && l.delta_gpu.size > 0){
-            fill_gpu(l.outputs * l.batch, 0, l.delta_gpu, 1);
+        if (i == 15) {
+            if (l.delta) {
+                fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
+            }
+            //copy net.input_gpu into net.input
+            cl_pull_array(net.input_gpu, net.input, l.inputs*l.batch);
+            l.forward(l, net);
+
+            net.input = l.output;
+            if (l.truth) {
+                net.truth = l.output;
+            }
         }
-        l.forward_gpu(l, net);
-        net.input_gpu = l.output_gpu;
-        net.input = l.output;
-        if(l.truth) {
-            net.truth_gpu = l.output_gpu;
-            net.truth = l.output;
+        else{
+            if (l.delta_gpu.buffer && l.delta_gpu.size > 0) {
+                fill_gpu(l.outputs * l.batch, 0, l.delta_gpu, 1);
+            }
+            l.forward_gpu(l, net);
+
+            net.input_gpu = l.output_gpu;
+            net.input = l.output;
+            if (l.truth) {
+                net.truth_gpu = l.output_gpu;
+                net.truth = l.output;
+            }
         }
+
+
+        auto t1 = std::chrono::system_clock::now();
+        std::cout << "Layer: " << i  << " time: " << std::chrono::duration_cast<std::chrono::microseconds>(t1-t0).count() << std::endl;
     }
-    pull_network_output(netp);
+    //pull_network_output(netp);
     calc_network_cost(netp);
 }
 

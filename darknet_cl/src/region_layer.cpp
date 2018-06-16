@@ -159,9 +159,9 @@ int entry_index(layer l, int batch, int location, int entry)
 void forward_region_layer(const layer l, network net)
 {
     int i,j,b,t,n;
-    memcpy(l.output, net.input, l.outputs*l.batch*sizeof(float));
+    memcpy(l.output, net.input, l.inputs*l.batch*sizeof(float));
 
-#ifndef GPU
+//#ifndef GPU
     for (b = 0; b < l.batch; ++b){
         for(n = 0; n < l.n; ++n){
             int index = entry_index(l, b, n*l.w*l.h, 0);
@@ -184,7 +184,7 @@ void forward_region_layer(const layer l, network net)
         int index = entry_index(l, 0, 0, l.coords + !l.background);
         softmax_cpu(net.input + index, l.classes + l.background, l.batch*l.n, l.inputs/l.n, l.w*l.h, 1, l.w*l.h, 1, l.output + index);
     }
-#endif
+//#endif
 
     memset(l.delta, 0, l.outputs * l.batch * sizeof(float));
     if(!net.train) return;

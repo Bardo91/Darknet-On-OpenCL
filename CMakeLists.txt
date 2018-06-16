@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+project(darknet)
 set(CMAKE_CXX_FLAGS "-std=c++11 -O2 -DNDEBUG " )
 
 set(OPENCV  ON)
@@ -28,4 +29,6 @@ include_directories(./darknet_cl/clBLAS)
 
 link_libraries(libpthread.so)
 
-add_executable(darknet ${DIR_LIB_SRC} ${DIR_EXAMPLE_SRC})
+catkin_package( INCLUDE_DIRS ./darknet_cl/include  ./darknet_cl/clBLAS)
+
+add_library(darknet ${DIR_LIB_SRC} ${DIR_EXAMPLE_SRC})
