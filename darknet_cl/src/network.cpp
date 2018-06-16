@@ -770,10 +770,10 @@ void forward_network_gpu(network *netp)
     if(net.truth){
 		cl_push_array(net.truth_gpu, net.truth, net.truths*net.batch);
     }
-    system("clear");
+    //system("clear");
     int i;
     for(i = 0; i < net.n; ++i){
-        auto t0 = std::chrono::system_clock::now();
+        //auto t0 = std::chrono::system_clock::now();
         net.index = i;
         layer l = net.layers[i];
         if (i == 15) {
@@ -802,10 +802,8 @@ void forward_network_gpu(network *netp)
                 net.truth = l.output;
             }
         }
-
-
-        auto t1 = std::chrono::system_clock::now();
-        std::cout << "Layer: " << i  << " time: " << std::chrono::duration_cast<std::chrono::microseconds>(t1-t0).count() << std::endl;
+        //auto t1 = std::chrono::system_clock::now();
+        //std::cout << "Layer: " << i  << " time: " << std::chrono::duration_cast<std::chrono::microseconds>(t1-t0).count() << std::endl;
     }
     //pull_network_output(netp);
     calc_network_cost(netp);
